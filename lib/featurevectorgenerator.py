@@ -36,7 +36,7 @@ def spectra (readings):
 
 # configure feature vector generation here:
 
-vector_resolution = 2 # number of readings in an averaged feature vector
+vector_resolution = 3 # number of readings in an averaged feature vector
 
 def make_feature_vector (readings): # A function we apply to each group of power spectra
   '''
