@@ -22,8 +22,10 @@ def parse_raw_values (reading):
   "make list of power spectra for all raw_values in a list"
   # first and last values have { and } attached.
   vals = reading['raw_values'].split(',')
-  vals[0] = vals[0][1:]
-  vals[len(vals)-1] = vals[len(vals)-1][:-1]
+  # print(vals)
+  # vals[0] = vals[0][1:]
+  # print(vals[0])
+  # vals[len(vals)-1] = vals[len(vals)-1][:-1]
   return np.array(vals).astype(np.float)
 
 # get the power spectrum
@@ -34,7 +36,7 @@ def spectra (readings):
 
 # configure feature vector generation here:
 
-vector_resolution = 3 # number of readings in an averaged feature vector
+vector_resolution = 2 # number of readings in an averaged feature vector
 
 def make_feature_vector (readings): # A function we apply to each group of power spectra
   '''

@@ -17,8 +17,6 @@ def readings (tag, subjectnum, positionnum, sessionnum="", sq=0):
         for line in f.readlines():
             parsed = json.loads(line[:-2])
             if parsed['tag'] == tag and parsed['reading']['signal_quality'] <= sq:
-                read.append(parsed)
-        yield read
-        # return [r for r in readings_in_range(result, t0, t1, sq)]
+                yield parsed['reading']
 
 print(readings('breath', 2,2))
