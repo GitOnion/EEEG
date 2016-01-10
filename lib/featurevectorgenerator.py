@@ -1,4 +1,4 @@
-from lib import querying
+from lib import querybytask
 from lib import brainlib
 from lib.grouper import grouper
 from itertools import izip_longest
@@ -49,12 +49,12 @@ def make_feature_vector (readings): # A function we apply to each group of power
 
 # feature vector generator
 
-def feature_vector_generator (subject, t0, t1, sq=0):
+def feature_vector_generator (task, subject, position, sq=0):
   '''Returns a generator of feature vectors
   for subject between t0 and t1. All returned vectors
   are guaranteed to be equal to or above signal quality sq.'''
   # get all the readings for subject between t0 and t1
-  readings = querying.readings(subject, t0, t1)
+  readings = querybytask.readings(task, subject, position)
   # group readings into lists of length `vector_resolution`
   groups = grouper(vector_resolution, readings)
   for g in groups:
@@ -62,4 +62,3 @@ def feature_vector_generator (subject, t0, t1, sq=0):
     # throw out readings with fewer signals than our desired resolution
     if len(readings) == vector_resolution:
       yield make_feature_vector(readings)
-

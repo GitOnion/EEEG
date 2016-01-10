@@ -23,7 +23,7 @@ def vectorsAndLabels(arrayOfGenerators):
 def crossValidate(X,y):
   "7-fold cross-validation with an SVM with a set of labels and vectors"
   clf = svm.LinearSVC()
-  scores = cross_validation.cross_val_score(clf, np.array(X), y, cv=7)
+  scores = cross_validation.cross_val_score(clf, np.array(X), y, cv=2)
   return scores.mean()
 
 # let's see how well we can distinguish between two subjects based on their brainwaves.
@@ -31,8 +31,8 @@ def crossValidate(X,y):
 t0 = parse('2015-05-09 23:28:00+00')
 t1 = parse('2015-05-09 23:30:31+00')
 # and make two generators of feature vectors for the two different subjects:
-personA_gen = feature_vector_generator(9, t0, t1)
-personB_gen = feature_vector_generator(13, t0, t1)
+personA_gen = feature_vector_generator('breath', 2, 2)
+personB_gen = feature_vector_generator('breath', 4, 2)
 # now let's feed these feature vectors into an SVM
 # and do 7-fold cross-validation.
 X, y = vectorsAndLabels([personA_gen, personB_gen])
