@@ -18,5 +18,3 @@ def readings (tag, subjectnum, positionnum, sessionnum="", sq=0):
             parsed = json.loads(line[:-2])
             if parsed['tag'] == tag and parsed['reading']['signal_quality'] <= sq:
                 yield parsed['reading']
-
-print(readings('breath', 2,2))
