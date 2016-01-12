@@ -1,41 +1,50 @@
 from lib.featurevectorgenerator import feature_vector_generator
-from dateutil.parser import parse
-from sklearn import svm
-from sklearn import cross_validation
-import numpy as np
+from lib import svm
 
 
-def vectorsAndLabels(arrayOfGenerators):
-    '''Takes an array of generators and produces two lists X and y
-    where len(X) = len(y),
-    X is the vectors, y is their (numerical) labels.'''
-    X = []
-    y = []
-    currentLabel = 0
-    for generator in arrayOfGenerators:
-        for vector in generator:
-            # NB: feature vectors are serialized as strings sometimes
-            # we map them to floats
-            X.append(vector)
-            y.append(currentLabel)
-        currentLabel += 1
-    return X, y
+# def compare_by_tasks(tasks, subject1, position, sessionnum=""):
+#     # if subject1 is not int or position is not int:
+#     #     raise ValueError("subject or position must be integer.")
+#     task_holder = []
+#     for task in tasks:
+#         task_holder.append(feature_vector_generator(task, subject1, position, sessionnum))
+#     for i in range(len(tasks)):
+#         for j in range(i+1, len(tasks)):
+#             print(tasks[i], tasks[j])
+#             X, y = svm.vectorsAndLabels([task_holder[i], task_holder[j]])
+#             comparison = 'For subject: '+ str(subject1) + ', ' + tasks[i] + " vs. " + tasks[j] + " cross-validation is: " + str(svm.crossValidate(X, y))
+#             print(comparison)
 
 
-def crossValidate(X, y):
-    "7-fold cross-validation with an SVM with a set of labels and vectors"
-    clf = svm.LinearSVC()
-    scores = cross_validation.cross_val_score(clf, np.array(X), y, cv=7)
-    return scores.mean()
+def compare_by_task(tasks, subject1, position, sessionnum=""):
+    print('For subject '+ str(subject1) + ', position ' + str(position) + ':')
+    for i in range(len(tasks)):
+        for j in range(i+1, len(tasks)):
+            taskA = feature_vector_generator(tasks[i], subject1, position, sessionnum)
+            taskB = feature_vector_generator(tasks[j], subject1, position, sessionnum)
+            X, y = svm.vectorsAndLabels([taskA, taskB])
+            comparison = tasks[i] + " vs. " + tasks[j] + " cross-validation is: " + str(svm.crossValidate(X, y))
+            print(comparison)
+
+
+def compare_by_subject(tasks, subjects, position):
+    for i in range(len(tasks)):
+        #TODO
+        for j in range(len(subjects)):
+            subA = feature_vector_generator(tasks[i], subject1, position, sessionnum)
+            subB = feature_vector_generator(tasks[j], subject1, position, sessionnum)
+
+
+
+tasks_list = ['breath', 'blink', 'ocular', 'song', 'hear', 'face', 'cube']
+# tasks_list = ['breath', 'cube']
+subjects_list = [1, 2, 3, 4]
+positions_list = [1, 2]
+sessions_list = [1, 2]
 
 # let's see how well we can distinguish between two subjects based on their brainwaves.
-# we'll get their data from a specific time range:
-t0 = parse('2015-05-09 23:28:00+00')
-t1 = parse('2015-05-09 23:30:31+00')
 # and make two generators of feature vectors for the two different subjects:
-personA_gen = feature_vector_generator('breath', 2, 2)
-personB_gen = feature_vector_generator('breath', 4, 2)
 # now let's feed these feature vectors into an SVM
 # and do 7-fold cross-validation.
-X, y = vectorsAndLabels([personA_gen, personB_gen])
-print(crossValidate(X, y))
+
+compare_by_task(tasks_list, 2, 2)

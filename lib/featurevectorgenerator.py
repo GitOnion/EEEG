@@ -1,8 +1,6 @@
 from lib import querybytask
 from lib import brainlib
 from lib.grouper import grouper
-from itertools import izip_longest
-from dateutil.parser import parse
 import numpy as np
 
 # make a generator of feature vectors
@@ -18,49 +16,46 @@ import numpy as np
 
 # utility functions
 
-def parse_raw_values (reading):
-  "make list of power spectra for all raw_values in a list"
-  # first and last values have { and } attached.
-  vals = reading['raw_values'].split(',')
-  # print(vals)
-  # vals[0] = vals[0][1:]
-  # print(vals[0])
-  # vals[len(vals)-1] = vals[len(vals)-1][:-1]
-  return np.array(vals).astype(np.float)
+def parse_raw_values(reading):
+    "make list of power spectra for all raw_values in a list"
+    # first and last values have { and } attached.
+    vals = reading['raw_values'].split(',')
+    # print(vals)
+    # vals[0] = vals[0][1:]
+    # print(vals[0])
+    # vals[len(vals)-1] = vals[len(vals)-1][:-1]
+    return np.array(vals).astype(np.float)
+
 
 # get the power spectrum
-def spectra (readings):
-  "Parse + calculate the power spectrum for every reading in a list"
-  return [brainlib.pSpectrum(parse_raw_values(r)) for r in readings]
-
+def spectra(readings):
+    "Parse + calculate the power spectrum for every reading in a list"
+    return [brainlib.pSpectrum(parse_raw_values(r)) for r in readings]
 
 # configure feature vector generation here:
+vector_resolution = 3  # number of readings in an averaged feature vector
 
-vector_resolution = 3 # number of readings in an averaged feature vector
 
-def make_feature_vector (readings): # A function we apply to each group of power spectra
-  '''
-  Create 100, log10-spaced bins for each power spectrum.
-  For more on how this particular implementation works, see:
-  http://coolworld.me/pre-processing-EEG-consumer-devices/
-  '''
-  return brainlib.avgPowerSpectrum(
-    brainlib.binnedPowerSpectra(spectra(readings), 100)
-    , np.log10)
+def make_feature_vector(readings):  # A function we apply to each group of power spectra
+    '''
+    Create 100, log10-spaced bins for each power spectrum.
+    For more on how this particular implementation works, see:
+    http://coolworld.me/pre-processing-EEG-consumer-devices/
+    '''
+    return brainlib.avgPowerSpectrum(brainlib.binnedPowerSpectra(spectra(readings), 100), np.log10)
 
 
 # feature vector generator
-
-def feature_vector_generator (task, subject, position, sq=0):
-  '''Returns a generator of feature vectors
-  for subject between t0 and t1. All returned vectors
-  are guaranteed to be equal to or above signal quality sq.'''
-  # get all the readings for subject between t0 and t1
-  readings = querybytask.readings(task, subject, position)
-  # group readings into lists of length `vector_resolution`
-  groups = grouper(vector_resolution, readings)
-  for g in groups:
-    readings = filter(None, g)
-    # throw out readings with fewer signals than our desired resolution
-    if len(readings) == vector_resolution:
-      yield make_feature_vector(readings)
+def feature_vector_generator(task, subject, position, sessionnum=""):
+    '''Returns a generator of feature vectors
+    for subject between t0 and t1. All returned vectors
+    are guaranteed to be equal to or above signal quality sq.'''
+    # get all the readings for subject between t0 and t1
+    readings = querybytask.readings(task, subject, position, sessionnum="")
+    # group readings into lists of length `vector_resolution`
+    groups = grouper(vector_resolution, readings)
+    for g in groups:
+        readings = filter(None, g)
+        # throw out readings with fewer signals than our desired resolution
+        if len(readings) == vector_resolution:
+            yield make_feature_vector(readings)
