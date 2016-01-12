@@ -27,13 +27,16 @@ def compare_by_task(tasks, subject1, position, sessionnum=""):
             print(comparison)
 
 
-def compare_by_subject(tasks, subjects, position):
+def compare_by_subject(tasks, subjects, position, sessionnum=""):
     for i in range(len(tasks)):
-        #TODO
+        print('For task ' + tasks[i] + ':')
         for j in range(len(subjects)):
-            subA = feature_vector_generator(tasks[i], subject1, position, sessionnum)
-            subB = feature_vector_generator(tasks[j], subject1, position, sessionnum)
-
+            for k in range(j+1, len(subjects)):
+                subA = feature_vector_generator(tasks[i], subjects[j], position, sessionnum)
+                subB = feature_vector_generator(tasks[i], subjects[k], position, sessionnum)
+                X, y = svm.vectorsAndLabels([subA, subB])
+                comparison = 'subject' + str(subjects[j]) + " vs. subject" + str(subjects[k]) + " cross-validation is: " + str(svm.crossValidate(X, y))
+                print(comparison)
 
 
 tasks_list = ['breath', 'blink', 'ocular', 'song', 'hear', 'face', 'cube']
@@ -42,9 +45,5 @@ subjects_list = [1, 2, 3, 4]
 positions_list = [1, 2]
 sessions_list = [1, 2]
 
-# let's see how well we can distinguish between two subjects based on their brainwaves.
-# and make two generators of feature vectors for the two different subjects:
-# now let's feed these feature vectors into an SVM
-# and do 7-fold cross-validation.
-
-compare_by_task(tasks_list, 2, 2)
+# compare_by_task(tasks_list, 2, 2)
+compare_by_subject(tasks_list, [2,4], 1)
