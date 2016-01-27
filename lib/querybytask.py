@@ -9,7 +9,7 @@ def dataset_path(subjectnum=1, positionnum=1, sessionnum=""):
     return path.join('dataset', str(subjectnum) + str(positionnum) + str(sessionnum) + '.csv')
 
 
-def readings(tag, subjectnum, positionnum, sessionnum="", sq=30):
+def readings(tag, subjectnum, positionnum, sessionnum="", sq=""):
     '''
     Returns all of subject's readings with tag,
     sq defines minimum signal quality - 0, by default

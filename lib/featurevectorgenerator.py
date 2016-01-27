@@ -2,28 +2,15 @@ from lib import querybytask
 from lib import brainlib
 from lib.grouper import grouper
 import numpy as np
+'''
+make a generator of feature vectors
+given a task, subject, electrode position, and session
+'''
 
-# make a generator of feature vectors
-# given a subject and a range of times
-#
-# example usage:
-#
-# subject_num = 11
-# t0 = parse('2015-05-09 23:28:46+00')
-# t1 = parse('2015-05-09 23:29:46+00')
-# gen = feature_vector_generator(subject_num, t0,t1)
-
-
-# utility functions
 
 def parse_raw_values(reading):
     "make list of power spectra for all raw_values in a list"
-    # first and last values have { and } attached.
     vals = reading['raw_values'].split(',')
-    # print(vals)
-    # vals[0] = vals[0][1:]
-    # print(vals[0])
-    # vals[len(vals)-1] = vals[len(vals)-1][:-1]
     return np.array(vals).astype(np.float)
 
 
@@ -46,12 +33,12 @@ def make_feature_vector(readings):  # A function we apply to each group of power
 
 
 # feature vector generator
-def feature_vector_generator(task, subject, position, sessionnum=""):
+def feature_vector_generator(task, subject, position, sessionnum="", sq=""):
     '''Returns a generator of feature vectors
-    for subject between t0 and t1. All returned vectors
+    for a specific task, subject, position, and session. All returned vectors
     are guaranteed to be equal to or above signal quality sq.'''
     # get all the readings for subject between t0 and t1
-    readings = querybytask.readings(task, subject, position, sessionnum="")
+    readings = querybytask.readings(task, subject, position, sessionnum, sq)
     # group readings into lists of length `vector_resolution`
     groups = grouper(vector_resolution, readings)
     for g in groups:
